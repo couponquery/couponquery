@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CouponQuery · Verified Codes</title>
+  <style>
+    body { font-family: system-ui, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.5; }
+    header { margin-bottom: 1.5rem; }
+    .pill { display:inline-block; padding: .2rem .5rem; border:1px solid #ccc; border-radius:999px; font-size:.85rem; }
+    table { border-collapse: collapse; width: 100%; }
+    th, td { border-bottom: 1px solid #eee; padding: .6rem .4rem; text-align: left; }
+    tfoot { font-size:.9rem; color:#666; }
+    code { background:#f7f7f7; padding:.1rem .3rem; border-radius:.25rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>CouponQuery <span class="pill">demo</span></h1>
+    <p>Trusted, last-verified coupon codes. This page calls <code>/api/codes?brand=demo</code> on the same site.</p>
+  </header>
+
+  <table id="codes">
+    <thead><tr><th>Code</th><th>Discount</th><th>Terms</th><th>Last verified</th></tr></thead>
+    <tbody><tr><td colspan="4">Loading…</td></tr></tbody>
+    <tfoot><tr><td colspan="4" id="status"></td></tr></tfoot>
+  </table>
+
+  <script>
+    async function main() {
+      const res = await fetch('/api/codes?brand=demo');
+      const data = await res.json();
+      const tbody = document.querySelector('#codes tbody');
+      tbody.innerHTML = '';
+      (data.codes || []).forEach(row => {
+        const v = (row.validations && row.validations[0]) || null;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td><code>${row.code}</code></td>
+          <td>${row.discount_text || ''}</td>
+          <td>${row.terms || ''}</td>
+          <td>${v && v.verified_at ? new Date(v.verified_at).toLocaleString() : '—'}</td>`;
+        tbody.appendChild(tr);
+      });
+      document.getElementById('status').textContent =
+        `Showing ${data.codes?.length ?? 0} code(s) for brand "demo".`;
+    }
+    main().catch(err => {
+      document.querySelector('#codes tbody').innerHTML =
+        `<tr><td colspan="4">Error: ${err.message}</td></tr>`;
+    });
+  </script>
+</body>
+</html>
