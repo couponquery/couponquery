@@ -5,50 +5,107 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>CouponQuery · Verified Codes</title>
   <style>
-    body { font-family: system-ui, Helvetica, Arial, sans-serif; margin: 2rem; line-height: 1.5; }
-    header { margin-bottom: 1.5rem; }
-    .pill { display:inline-block; padding: .2rem .5rem; border:1px solid #ccc; border-radius:999px; font-size:.85rem; }
-    table { border-collapse: collapse; width: 100%; }
-    th, td { border-bottom: 1px solid #eee; padding: .6rem .4rem; text-align: left; }
+    :root { --pad: 1rem; }
+    body { font-family: system-ui, Helvetica, Arial, sans-serif; margin: var(--pad); line-height: 1.5; }
+    header { margin-bottom: .75rem; }
+    .row { display:flex; gap:.5rem; align-items:center; flex-wrap:wrap; margin-bottom: .75rem; }
+    .pill { display:inline-block; padding: .15rem .5rem; border:1px solid #ccc; border-radius:999px; font-size:.85rem; }
+    select, button { font: inherit; padding:.4rem .6rem; border:1px solid #ccc; border-radius:.5rem; background:#fff; cursor:pointer; }
+    table { border-collapse: collapse; width: 100%; margin-top:.5rem; }
+    th, td { border-bottom: 1px solid #eee; padding: .55rem .4rem; text-align: left; vertical-align: top; }
     tfoot { font-size:.9rem; color:#666; }
     code { background:#f7f7f7; padding:.1rem .3rem; border-radius:.25rem; }
+    .muted { color:#666; font-size:.9rem; }
   </style>
 </head>
 <body>
   <header>
-    <h1>CouponQuery <span class="pill">demo</span></h1>
-    <p>Trusted, last-verified coupon codes. This page calls <code>/api/codes?brand=demo</code> on the same site.</p>
+    <h1>CouponQuery <span class="pill">live demo</span></h1>
+    <p class="muted">Trusted, last verified coupon codes. Pick a brand. Data loads from <code>/api/brands</code> and <code>/api/codes?brand=…</code>.</p>
   </header>
 
+  <div class="row">
+    <label for="brand">Brand</label>
+    <select id="brand" aria-label="Brand"></select>
+    <button id="refresh" type="button">Refresh</button>
+    <span id="meta" class="muted"></span>
+  </div>
+
   <table id="codes">
-    <thead><tr><th>Code</th><th>Discount</th><th>Terms</th><th>Last verified</th></tr></thead>
+    <thead>
+      <tr><th>Code</th><th>Discount</th><th>Terms</th><th>Verified at</th></tr>
+    </thead>
     <tbody><tr><td colspan="4">Loading…</td></tr></tbody>
     <tfoot><tr><td colspan="4" id="status"></td></tr></tfoot>
   </table>
 
   <script>
-    async function main() {
-      const res = await fetch('/api/codes?brand=demo');
-      const data = await res.json();
-      const tbody = document.querySelector('#codes tbody');
-      tbody.innerHTML = '';
-      (data.codes || []).forEach(row => {
-        const v = (row.validations && row.validations[0]) || null;
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td><code>${row.code}</code></td>
-          <td>${row.discount_text || ''}</td>
-          <td>${row.terms || ''}</td>
-          <td>${v && v.verified_at ? new Date(v.verified_at).toLocaleString() : '—'}</td>`;
-        tbody.appendChild(tr);
-      });
-      document.getElementById('status').textContent =
-        `Showing ${data.codes?.length ?? 0} code(s) for brand "demo".`;
+    const $brand = document.getElementById('brand');
+    const $tbody = document.querySelector('#codes tbody');
+    const $status = document.getElementById('status');
+    const $meta = document.getElementById('meta');
+    const $refresh = document.getElementById('refresh');
+
+    function fmt(dt) {
+      try { return new Date(dt).toLocaleString(); } catch { return ''; }
     }
-    main().catch(err => {
-      document.querySelector('#codes tbody').innerHTML =
-        `<tr><td colspan="4">Error: ${err.message}</td></tr>`;
-    });
+
+    async function loadBrands() {
+      try {
+        const res = await fetch('/api/brands');
+        const data = await res.json();
+        $brand.innerHTML = '';
+        const names = (data.brands || []).map(b => b.name).filter(Boolean);
+        const list = names.length ? names : ['demo'];
+        for (const name of list) {
+          const opt = document.createElement('option');
+          opt.value = name;
+          opt.textContent = name;
+          $brand.appendChild(opt);
+        }
+      } catch {
+        // Fallback if brands endpoint not available
+        $brand.innerHTML = '<option value="demo">demo</option>';
+      }
+    }
+
+    async function loadCodes() {
+      const name = $brand.value || 'demo';
+      $tbody.innerHTML = '<tr><td colspan="4">Loading…</td></tr>';
+      try {
+        const res = await fetch(`/api/codes?brand=${encodeURIComponent(name)}`);
+        const data = await res.json();
+        const rows = data.codes || [];
+        $tbody.innerHTML = '';
+        if (!rows.length) {
+          $tbody.innerHTML = '<tr><td colspan="4">No codes found for this brand.</td></tr>';
+        } else {
+          for (const row of rows) {
+            const v = (row.validations && row.validations[0]) || null;
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+              <td><code>${row.code}</code></td>
+              <td>${row.discount_text || ''}</td>
+              <td>${row.terms || ''}</td>
+              <td>${v && v.verified_at ? fmt(v.verified_at) : 'Not yet'}</td>`;
+            $tbody.appendChild(tr);
+          }
+        }
+        $status.textContent = `Showing ${rows.length} code(s) for "${name}".`;
+        $meta.textContent = `Updated ${new Date().toLocaleTimeString()}`;
+      } catch (err) {
+        $tbody.innerHTML = `<tr><td colspan="4">Error: ${err.message}</td></tr>`;
+        $status.textContent = '';
+      }
+    }
+
+    $brand.addEventListener('change', loadCodes);
+    $refresh.addEventListener('click', loadCodes);
+
+    (async function init() {
+      await loadBrands();
+      await loadCodes();
+    })();
   </script>
 </body>
 </html>
