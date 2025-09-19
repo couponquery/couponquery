@@ -2,6 +2,12 @@
   publish = "."
   base = "sites/luxecodes"
 
+[[redirects]]
+  from = "/brand/:slug"
+  to = "/?brand=:slug"
+  status = 200
+  force = true
+
 [[headers]]
   for = "/*"
   [headers.values]
