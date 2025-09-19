@@ -17,10 +17,8 @@ export const handler = async (event) => {
     const brand = event.queryStringParameters?.brand || "";
     if (!brand) return { statusCode: 400, headers: cors, body: JSON.stringify({ error: "Missing brand" }) };
 
-    const url = `${process.env.SUPABASE_URL}/rest/v1/codes` +
-      `?select=id,brand,code,discount_text,terms,added_at,validations(validated_at,status)` +
-      `&brand=eq.${encodeURIComponent(brand)}` +
-      `&order=added_at.desc.nullslast`;
+    const select = "id,brand,code,discount_text,terms,added_at";
+    const url = `${process.env.SUPABASE_URL}/rest/v1/codes?select=${encodeURIComponent(select)}&brand=eq.${encodeURIComponent(brand)}&order=added_at.desc.nullslast`;
 
     const headers = {
       apikey: SERVICE_KEY,
@@ -35,19 +33,7 @@ export const handler = async (event) => {
     }
     const rows = await res.json();
 
-    const codes = rows.map(r => {
-      const dates = Array.isArray(r.validations) ? r.validations.map(v => v.validated_at).filter(Boolean) : [];
-      const last_verified = dates.length ? dates.sort().slice(-1)[0] : null;
-      return {
-        id: r.id,
-        brand: r.brand,
-        code: r.code,
-        discount_text: r.discount_text,
-        terms: r.terms,
-        added_at: r.added_at,
-        last_verified
-      };
-    });
+    const codes = rows.map(r => ({ ...r, last_verified: null }));
 
     return { statusCode: 200, headers: { ...cors, "Content-Type": "application/json", "Cache-Control": "public, max-age=60" }, body: JSON.stringify({ brand, count: codes.length, codes }) };
   } catch (e) {
