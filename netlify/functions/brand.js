@@ -1,3 +1,5 @@
+const SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SERVICE_KEY;
+
 export const handler = async (event) => {
   const origin = event.headers.origin || "";
   const allowed = (process.env.CORS_ORIGINS || "").split(",").map(s => s.trim()).filter(Boolean);
@@ -21,8 +23,8 @@ export const handler = async (event) => {
       `&order=added_at.desc.nullslast`;
 
     const headers = {
-      apikey: process.env.SUPABASE_SERVICE_KEY,
-      Authorization: `Bearer ${process.env.SUPABASE_SERVICE_KEY}`,
+      apikey: SERVICE_KEY,
+      Authorization: `Bearer ${SERVICE_KEY}`,
       Prefer: "count=exact"
     };
 
