@@ -24,9 +24,11 @@ export const handler = async (event) => {
     };
   }
 
-  // sanitize brand
+  // sanitize brand (allow empty for no-filter fallback)
   let brand = event.queryStringParameters?.brand || "";
-  brand = brand.toLowerCase().replace(/[^a-z0-9._-]/g, "").slice(0, 64);
+  if (brand) {
+    brand = brand.toLowerCase().replace(/[^a-z0-9._-]/g, "").slice(0, 64);
+  }
 
   const headers = {
     apikey: SERVICE_KEY,
