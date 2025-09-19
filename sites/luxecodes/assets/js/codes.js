@@ -1,4 +1,11 @@
 const API_BASE = "https://couponcanon.com";
+
+function getBrand() {
+  const p = new URLSearchParams(location.search);
+  const b = (p.get("brand") || "demo").toLowerCase().replace(/[^a-z0-9._-]/g,"").slice(0,64);
+  return b || "demo";
+}
+
 async function loadBrand(brand = "demo") {
   const el = document.querySelector("[data-codes]");
   if (!el) return;
@@ -26,9 +33,13 @@ async function loadBrand(brand = "demo") {
     } else {
       el.innerHTML = "<li>No codes available</li>";
     }
+    
+    // Update brand label
+    const label = document.querySelector("[data-brand-label]");
+    if (label) label.textContent = `Latest codes ${brand ? "for " + brand : ""}`;
   } catch (e) {
     console.error(e);
     el.innerHTML = "<li>Unable to load codes</li>";
   }
 }
-document.addEventListener("DOMContentLoaded", () => loadBrand("demo"));
+document.addEventListener("DOMContentLoaded", () => loadBrand(getBrand()));
