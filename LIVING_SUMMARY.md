@@ -47,5 +47,123 @@
 - Public JSON API AIs can trust
 - Luxury-only, premium presentation
 
+## API contract
+
+Base
+- GET /api/brand?brand={slug}
+
+Query
+- brand: string, required, matches brands.slug
+
+Response
+{
+  "brand": "demo",
+  "count": 1,
+  "codes": [
+    {
+      "id": "uuid",
+      "code": "WELCOME10",
+      "discount_text": "10% off your first order",
+      "terms": "Valid until 2025-12-31",
+      "added_at": "2025-09-16T05:54:40.944Z",
+      "last_verified": "2025-09-19T17:20:11.000Z" | null,
+      "source": "string" | null
+    }
+  ]
+}
+
+Errors
+- 400 invalid brand param
+- 404 brand not found
+- 500 internal
+
+## Health and logging
+
+New
+- GET /api/health → { "ok": true, "uptime_ms": 1234, "time": "ISO-8601" }
+
+Minimal logs in functions
+- brand.js: log req id, brand, result count
+- health.js: log uptime and cold start
+
+## Security and CORS
+
+Env (Netlify Project configuration)
+- SUPABASE_URL
+- SUPABASE_SERVICE_ROLE_KEY or SUPABASE_SERVICE_KEY
+- CORS_ORIGINS = https://luxecodes.com,https://www.luxecodes.com,http://localhost:8888
+
+Headers
+- sites/luxecodes/_headers → connect-src must include couponcanon.com
+
+Safeguards backlog
+- Per IP rate limit in brand.js
+- Origin allowlist check for Origin or Referer
+- 60s function timeout alerts
+
+## Data model
+
+Tables
+- brands { id uuid pk, slug text unique, name text, active bool default true }
+- codes { id uuid pk, brand_id uuid fk, code text, discount_text text, terms text, added_at timestamptz default now() }
+- validations { id uuid pk, code_id uuid fk, verified_at timestamptz, source text, status text }
+
+View
+- brand_codes_v as the join used by brand.js
+
+Indexes
+- brands.slug btree
+- codes.brand_id btree
+- validations.code_id btree
+
+## Frontend integration
+
+Routes
+- /?brand=slug and /brand/slug redirect to query param
+- Netlify redirects live in sites/luxecodes/netlify.toml
+
+Rendering
+- sites/luxecodes/assets/js/codes.js fetches /api/brand and renders cards
+- Show Verified {date} when last_verified not null
+- Copy button writes code to clipboard with brief state change
+
+## Ops runbook quick commands
+
+Engine redeploy
+- Netlify UI → Deploys → Trigger deploy for functions
+
+Frontend cache bust
+- Netlify UI → Deploys → Clear cache and deploy site
+
+CSP update
+- Edit sites/luxecodes/_headers connect-src
+- Commit to main, wait for deploy
+
+Pretty URLs check
+- Confirm sites/luxecodes/netlify.toml has /brand/:slug → /.netlify/functions/brand?brand=:slug 200
+
+## Live status
+
+- API ok at https://couponcanon.com/api/brand?brand=demo
+- LuxeCodes live with white, navy, gold
+- DNS and SSL valid
+- CSP, CORS, secrets configured
+
+## Known gaps
+
+- Validations not wired, last_verified is null
+- No rate limit or origin allowlist
+- SEO files exist, need final review
+- If LuxeCodes looks unchanged, confirm Base and Publish = sites/luxecodes
+
+## Next steps
+
+1) Add /api/health and add request logging to brand.js
+2) Build n8n pipeline to ingest, upsert, and stamp validations
+3) Surface Verified {date} in cards
+4) Lock schema on brands.slug and publish the API contract above
+5) SEO polish per brand meta and OG, verify sitemap and robots
+6) Add rate limit and origin allowlist
+
 ## Status line
 LuxeCodes is live and pulling from CouponCanon. Demo code WELCOME10 flows end-to-end. Next: health endpoint, n8n validations, schema lock, SEO polish, safeguards.
