@@ -153,6 +153,40 @@
       margin-right: 6px;
       vertical-align: middle;
     }
+    .codes {
+      list-style: none;
+      padding: 0;
+      margin: 2rem 0;
+    }
+    .code-item {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem;
+      margin-bottom: 1rem;
+    }
+    .code-item .row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    .code-item .coupon {
+      font-family: 'Inter', monospace;
+      font-weight: 600;
+      color: var(--gold);
+      font-size: 1.1rem;
+    }
+    .code-item .desc {
+      color: rgba(247,243,232,0.82);
+      font-size: 0.9rem;
+    }
+    .code-item .meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: rgba(247,243,232,0.6);
+    }
     @media (prefers-reduced-motion: reduce) {
       .feature:hover,
       .btn:hover {
@@ -184,6 +218,8 @@
       </div>
     </div>
 
+    <ul data-codes class="codes"></ul>
+
     <div class="cta">
       <a href="#" class="btn">Get Early Access</a>
     </div>
@@ -195,5 +231,6 @@
       Verified by CouponCanon Engine
     </div>
   </div>
+  <script src="assets/js/codes.js" defer></script>
 </body>
 </html>
