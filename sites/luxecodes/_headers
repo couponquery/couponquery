@@ -1,0 +1,2 @@
+/*
+  Content-Security-Policy: default-src 'self'; connect-src 'self' https://couponcanon.com https://www.couponcanon.com; script-src 'self' 'unsafe-inline' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https:; object-src 'none'; base-uri 'self'; frame-ancestors 'none';
