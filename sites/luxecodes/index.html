@@ -8,6 +8,20 @@
   />
   <title>LuxeCodes</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+  <script type="application/ld+json" id="faq-schema">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [{
+        "@type": "Question",
+        "name": "What are the best verified codes today?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Loading verified codes..."
+        }
+      }]
+    }
+  </script>
   <style>
     :root {
       --navy:#0B3B75;
@@ -31,9 +45,12 @@
     .card { background:#fff; border:1px solid var(--linen); border-radius:10px; padding:16px; box-shadow:0 2px 6px rgba(0,0,0,0.05); }
     .card h3 { margin:0 0 6px; font-family:"Playfair Display", serif; color:var(--navy); font-size:20px; }
     .meta { font-size:12px; color:#586070; margin-bottom:10px; }
-    .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
-    footer { background:var(--navy); color:#fff; text-align:center; padding:20px; margin-top:24px; }
-    footer a { color:var(--gold); text-decoration:none; margin:0 8px; }
+      .row { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+      .qa-block { text-align:center; max-width:800px; margin:0 auto; }
+      .qa-block h2 { font-family:"Playfair Display", serif; color:var(--navy); font-size:28px; margin:0 0 16px; }
+      .qa-block p { font-size:18px; color:var(--ink); line-height:1.6; margin:0; }
+      footer { background:var(--navy); color:#fff; text-align:center; padding:20px; margin-top:24px; }
+      footer a { color:var(--gold); text-decoration:none; margin:0 8px; }
   </style>
 </head>
 <body>
@@ -52,6 +69,14 @@
     <a class="btn" href="/brands">Browse Codes</a>
   </section>
 
+  <!-- Q&A Block -->
+  <section class="section">
+    <div class="qa-block">
+      <h2 id="qa-question">What are the best verified codes today?</h2>
+      <p id="qa-answer">Below you'll find our latest verified coupons. Each code includes an exact verification timestamp.</p>
+    </div>
+  </section>
+
   <!-- Codes grid populated by assets/js/codes.js -->
   <section class="section">
     <div id="codes" class="brands" aria-live="polite"></div>
@@ -61,6 +86,6 @@
     <p>&copy; 2025 LuxeCodes. All rights reserved. <a href="/privacy">Privacy</a> | <a href="/terms">Terms</a></p>
   </footer>
 
-  <script src="/assets/js/codes.js" defer></script>
+  <script type="module" src="/assets/js/codes.js"></script>
 </body>
 </html>
