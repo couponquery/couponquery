@@ -33,7 +33,22 @@ async function testBrand() {
     console.log(`Count: ${data.count}`);
     console.log(`Codes: ${data.codes ? data.codes.length : 0}`);
     
-    return response.status === 200 && data.brand === "demo";
+    // Check for last_verified field
+    const hasLastVerifiedField = data.codes && data.codes.length > 0 && 
+      data.codes[0].hasOwnProperty('last_verified');
+    console.log(`BRAND ok count=${data.codes ? data.codes.length : 0} has_last_verified_field=${hasLastVerifiedField}`);
+    
+    if (data.codes && data.codes.length > 0) {
+      const firstCode = data.codes[0];
+      console.log(`First code: ${firstCode.code}`);
+      if (firstCode.last_verified) {
+        console.log(`Last verified: ${firstCode.last_verified}`);
+      } else {
+        console.log(`Last verified: null (not yet verified)`);
+      }
+    }
+    
+    return response.status === 200 && data.brand === "demo" && hasLastVerifiedField;
   } catch (error) {
     console.error(`Brand test failed: ${error.message}`);
     return false;
