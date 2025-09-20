@@ -11,6 +11,7 @@
     "node": ">=18.0.0"
   },
   "scripts": {
-    "test:api": "node scripts/smoke.js"
+    "test:api": "node scripts/smoke.js",
+    "migrate:supabase": "node scripts/apply-supabase-migrations.js"
   }
 }
