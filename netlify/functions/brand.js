@@ -1,7 +1,13 @@
+import { getCorsOrigin } from './_cors.js';
+
 export const handler = async (event) => {
+  // Generate request ID for logging
+  const req_id = Math.random().toString(36).substring(2, 8);
+  
   const origin = event.headers.origin || "";
-  const allow = (process.env.CORS_ORIGINS || "").split(",").map(s => s.trim()).filter(Boolean);
-  const corsOrigin = allow.includes(origin) ? origin : (allow[0] || "*");
+  const allowedOrigins = process.env.CORS_ORIGINS || "";
+  const corsOrigin = getCorsOrigin(origin, allowedOrigins) || "*";
+  
   const cors = {
     "Access-Control-Allow-Origin": corsOrigin,
     "Access-Control-Allow-Methods": "GET, OPTIONS",
@@ -30,6 +36,17 @@ export const handler = async (event) => {
     brand = brand.toLowerCase().replace(/[^a-z0-9._-]/g, "").slice(0, 64);
   }
 
+  // Log request start
+  const user_agent = event.headers['user-agent'] || '';
+  const ip = event.headers['x-nf-client-connection-ip'] || event.headers['x-forwarded-for'] || '';
+  console.log(JSON.stringify({
+    evt: "brand_request_start",
+    req_id,
+    brand,
+    user_agent,
+    ip
+  }));
+
   const headers = {
     apikey: SERVICE_KEY,
     Authorization: `Bearer ${SERVICE_KEY}`,
@@ -57,6 +74,15 @@ export const handler = async (event) => {
       if (res.ok) {
         const rows = await res.json();
         const codes = rows.map(r => ({ ...r, last_verified: null }));
+        
+        // Log successful result
+        console.log(JSON.stringify({
+          evt: "brand_request_result",
+          req_id,
+          brand,
+          count: codes.length
+        }));
+        
         return {
           statusCode: 200,
           headers: { ...cors, "Content-Type": "application/json", "Cache-Control": "public, max-age=60" },
@@ -71,6 +97,14 @@ export const handler = async (event) => {
       // continue trying the next candidate
     }
   }
+
+  // Log error
+  console.log(JSON.stringify({
+    evt: "brand_request_error",
+    req_id,
+    brand,
+    message: lastDetail
+  }));
 
   return {
     statusCode: 500,
