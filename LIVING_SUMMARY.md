@@ -77,14 +77,24 @@ Errors
 - 404 brand not found
 - 500 internal
 
+Health
+- GET /api/health
+- Response: { "ok": true, "uptime_ms": 1234, "time": "2025-01-01T00:00:00.000Z", "env": "production" }
+
 ## Health and logging
 
-New
-- GET /api/health → { "ok": true, "uptime_ms": 1234, "time": "ISO-8601" }
+Health endpoint
+- GET /api/health → { "ok": true, "uptime_ms": 1234, "time": "ISO-8601", "env": "production|preview" }
+- Returns function uptime since cold start
+- Includes environment context
 
-Minimal logs in functions
-- brand.js: log req id, brand, result count
-- health.js: log uptime and cold start
+Structured logging
+- brand.js logs:
+  - brand_request_start: { req_id, brand, user_agent, ip }
+  - brand_request_result: { req_id, brand, count }
+  - brand_request_error: { req_id, brand, message }
+- health.js: logs uptime and cold start
+- All logs use JSON.stringify for structured output
 
 ## Security and CORS
 
@@ -94,7 +104,8 @@ Env (Netlify Project configuration)
 - CORS_ORIGINS = https://luxecodes.com,https://www.luxecodes.com,http://localhost:8888
 
 Headers
-- sites/luxecodes/_headers → connect-src must include couponcanon.com
+- sites/luxecodes/_headers → connect-src must include https://couponcanon.com and https://www.couponcanon.com
+- CORS headers set based on CORS_ORIGINS environment variable
 
 Safeguards backlog
 - Per IP rate limit in brand.js
