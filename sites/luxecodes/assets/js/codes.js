@@ -6,9 +6,22 @@ function getBrand() {
   return b || "demo";
 }
 
+function formatDate(isoString) {
+  try {
+    const date = new Date(isoString);
+    return date.toLocaleDateString('en-US', { 
+      year: 'numeric', 
+      month: 'short', 
+      day: 'numeric' 
+    });
+  } catch {
+    return isoString;
+  }
+}
+
 function renderCodeCard(item, brandLabel) {
   const verified = item.last_verified
-    ? new Date(item.last_verified).toLocaleString()
+    ? formatDate(item.last_verified)
     : null;
   return `
     <div class="card">
