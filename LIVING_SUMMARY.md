@@ -142,6 +142,17 @@ Rendering
 - Show "Verified {date}" when last_verified not null (formatted as "Sep 20, 2025")
 - Copy button writes code to clipboard with brief state change
 - Codes ordered by verification status (verified first, then by added date)
+- Q&A block at top: "What are the best verified {brand} codes today?"
+- Dynamic FAQ schema (JSON-LD) with live codes and verification timestamps
+
+## SEO
+
+AI-First Design
+- Each brand page framed as Q&A: "What are the best verified {brand} codes today?"
+- FAQPage schema (JSON-LD) with live codes and verification timestamps
+- Dynamic answer text includes first 3 codes with discount text and verification dates
+- Schema validates as FAQPage for Google/Gemini citation
+- Rich Results test: https://search.google.com/test/rich-results
 
 ## Ops runbook quick commands
 
