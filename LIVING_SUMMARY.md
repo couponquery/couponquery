@@ -66,11 +66,14 @@ Response
       "discount_text": "10% off your first order",
       "terms": "Valid until 2025-12-31",
       "added_at": "2025-09-16T05:54:40.944Z",
-      "last_verified": "2025-09-19T17:20:11.000Z" | null,
-      "source": "string" | null
+      "last_verified": "2025-09-20T12:34:56.000Z" | null
     }
   ]
 }
+
+Ordering
+- Codes ordered by last_verified desc nulls last, then added_at desc
+- Most recently verified codes appear first
 
 Errors
 - 400 invalid brand param
@@ -119,8 +122,9 @@ Tables
 - codes { id uuid pk, brand_id uuid fk, code text, discount_text text, terms text, added_at timestamptz default now() }
 - validations { id uuid pk, code_id uuid fk, verified_at timestamptz, source text, status text }
 
-View
-- brand_codes_v as the join used by brand.js
+Views
+- latest_validations: latest verification timestamp per code_id
+- RPC function: get_brand_codes_with_validations(brand_slug, limit_count)
 
 Indexes
 - brands.slug btree
@@ -135,8 +139,9 @@ Routes
 
 Rendering
 - sites/luxecodes/assets/js/codes.js fetches /api/brand and renders cards
-- Show Verified {date} when last_verified not null
+- Show "Verified {date}" when last_verified not null (formatted as "Sep 20, 2025")
 - Copy button writes code to clipboard with brief state change
+- Codes ordered by verification status (verified first, then by added date)
 
 ## Ops runbook quick commands
 
