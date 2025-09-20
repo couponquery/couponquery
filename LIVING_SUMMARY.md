@@ -125,11 +125,26 @@ Tables
 Views
 - latest_validations: latest verification timestamp per code_id
 - RPC function: get_brand_codes_with_validations(brand_slug, limit_count)
+- RPC function: upsert_validation(code_id uuid, verified_at timestamptz, source text, status text)
 
 Indexes
 - brands.slug btree
 - codes.brand_id btree
 - validations.code_id btree
+- validations.verified_at btree
+
+## Validation RPC
+
+upsert_validation Function
+- Purpose: Single insert for validations by n8n or external workers
+- Parameters: code_id (uuid), verified_at (timestamptz), source (text), status (text)
+- Effect: latest_validations view updates automatically, brand API includes last_verified on next call
+- Defaults: source='n8n', status='verified' if not provided
+- Security: Uses security definer for controlled access
+
+Usage
+- Call via Supabase REST API: POST /rest/v1/rpc/upsert_validation
+- Body: { "p_code_id": "uuid", "p_verified_at": "2025-01-01T00:00:00Z", "p_source": "n8n", "p_status": "verified" }
 
 ## Frontend integration
 
