@@ -53,49 +53,49 @@ export const handler = async (event) => {
     Prefer: "count=exact"
   };
 
-  const select = "id,code,discount_text,terms,added_at";
-  const order = "&order=added_at.desc.nullslast";
-  const limit = "&limit=50";
-
-  // Try candidate columns, then no filter
-  const filters = [];
-  if (brand) {
-    filters.push(`brand=eq.${encodeURIComponent(brand)}`);
-    filters.push(`brand_slug=eq.${encodeURIComponent(brand)}`);
-    filters.push(`brand_name=eq.${encodeURIComponent(brand)}`);
-  }
-  filters.push(null); // final fallback: no filter
-
-  let lastDetail = "";
-  for (const f of filters) {
-    const url = `${SUPABASE_URL}/rest/v1/codes?select=${encodeURIComponent(select)}${f ? "&" + f : ""}${order}${limit}`;
-    try {
-      const res = await fetch(url, { headers });
-      if (res.ok) {
-        const rows = await res.json();
-        const codes = rows.map(r => ({ ...r, last_verified: null }));
+  // Use RPC call to join with latest_validations view
+  const rpcUrl = `${SUPABASE_URL}/rest/v1/rpc/get_brand_codes_with_validations`;
+  const rpcBody = {
+    brand_slug: brand || null,
+    limit_count: 50
+  };
+  
+  try {
+    const res = await fetch(rpcUrl, { 
+      method: 'POST',
+      headers: { ...headers, 'Content-Type': 'application/json' },
+      body: JSON.stringify(rpcBody)
+    });
+    
+    if (res.ok) {
+      const rows = await res.json();
+      const codes = rows.map(r => ({
+        id: r.id,
+        code: r.code,
+        discount_text: r.discount_text,
+        terms: r.terms,
+        added_at: r.added_at,
+        last_verified: r.last_verified
+      }));
         
-        // Log successful result
-        console.log(JSON.stringify({
-          evt: "brand_request_result",
-          req_id,
-          brand,
-          count: codes.length
-        }));
-        
-        return {
-          statusCode: 200,
-          headers: { ...cors, "Content-Type": "application/json", "Cache-Control": "public, max-age=60" },
-          body: JSON.stringify({ brand: brand || null, count: codes.length, codes })
-        };
-      } else {
-        lastDetail = await res.text();
-        // continue trying the next candidate
-      }
-    } catch (e) {
-      lastDetail = e.message || String(e);
-      // continue trying the next candidate
+      // Log successful result
+      console.log(JSON.stringify({
+        evt: "brand_request_result",
+        req_id,
+        brand,
+        count: codes.length
+      }));
+      
+      return {
+        statusCode: 200,
+        headers: { ...cors, "Content-Type": "application/json", "Cache-Control": "public, max-age=60" },
+        body: JSON.stringify({ brand: brand || null, count: codes.length, codes })
+      };
+    } else {
+      lastDetail = await res.text();
     }
+  } catch (e) {
+    lastDetail = e.message || String(e);
   }
 
   // Log error
