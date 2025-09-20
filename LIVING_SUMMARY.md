@@ -192,6 +192,23 @@ CSP Domains Whitelisted
 - connect-src: pagead2.googlesyndication.com, googleads.g.doubleclick.net, googletagmanager.com
 - frame-src: googleads.g.doubleclick.net, tpc.googlesyndication.com
 
+## Migrations
+
+Supabase Database Migrations
+- Migration files live in supabase/migrations/
+- Timestamped filenames: YYYYMMDD_description.sql
+- Run locally with: npm run migrate:supabase
+- Requires SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY envs
+
+Current Migrations
+- 20250920_validation_views.sql - latest_validations view and get_brand_codes_with_validations RPC
+- 20250920_upsert_validation.sql - upsert_validation RPC for validation stamps
+
+Usage
+- Set environment variables: export SUPABASE_URL=... && export SUPABASE_SERVICE_ROLE_KEY=...
+- Run migrations: npm run migrate:supabase
+- Copy output SQL to Supabase SQL editor for execution
+
 ## Ops runbook quick commands
 
 Engine redeploy
