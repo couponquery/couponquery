@@ -154,6 +154,29 @@ AI-First Design
 - Schema validates as FAQPage for Google/Gemini citation
 - Rich Results test: https://search.google.com/test/rich-results
 
+## Monetization
+
+AdSense Integration
+- Environment-gated ads (disabled by default)
+- Single responsive ad unit below Q&A block
+- Minimal CSP changes for AdSense domains only
+
+Netlify Project Configuration
+- LUXE_ENABLE_ADS = true|false (default: false)
+- ADSENSE_PUB_ID = ca-pub-XXXXXXXXXXXXXXX
+- ADSENSE_SLOT_ID = 0000000000
+
+Files
+- sites/luxecodes/ads.txt - Update with actual publisher ID
+- sites/luxecodes/assets/js/ads.js - AdSense loader with env checks
+- sites/luxecodes/_headers - CSP allows AdSense domains
+
+CSP Domains Whitelisted
+- script-src: pagead2.googlesyndication.com, googletagmanager.com
+- img-src: pagead2.googlesyndication.com, googleads.g.doubleclick.net
+- connect-src: pagead2.googlesyndication.com, googleads.g.doubleclick.net, googletagmanager.com
+- frame-src: googleads.g.doubleclick.net, tpc.googlesyndication.com
+
 ## Ops runbook quick commands
 
 Engine redeploy
