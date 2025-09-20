@@ -1,3 +1,5 @@
+import { formatDate } from './formatDate.js';
+
 const API_BASE = "https://couponcanon.com";
 
 function getBrand() {
@@ -6,17 +8,56 @@ function getBrand() {
   return b || "demo";
 }
 
-function formatDate(isoString) {
-  try {
-    const date = new Date(isoString);
-    return date.toLocaleDateString('en-US', { 
-      year: 'numeric', 
-      month: 'short', 
-      day: 'numeric' 
-    });
-  } catch {
-    return isoString;
+function updateQABlock(brand, codes) {
+  const questionEl = document.getElementById('qa-question');
+  const answerEl = document.getElementById('qa-answer');
+  
+  if (questionEl) {
+    questionEl.textContent = `What are the best verified ${brand} codes today?`;
   }
+  
+  if (answerEl) {
+    if (codes && codes.length > 0) {
+      const codeList = codes.slice(0, 3).map(c => {
+        const verified = c.last_verified ? ` (verified ${formatDate(c.last_verified)})` : '';
+        return `${c.code}${c.discount_text ? ` - ${c.discount_text}` : ''}${verified}`;
+      }).join(', ');
+      answerEl.textContent = `The current verified codes for ${brand} are: ${codeList}. Each includes an exact verification timestamp.`;
+    } else {
+      answerEl.textContent = `Currently no verified codes available for ${brand}.`;
+    }
+  }
+}
+
+function updateFAQSchema(brand, codes) {
+  const schemaEl = document.getElementById('faq-schema');
+  if (!schemaEl) return;
+  
+  let answerText;
+  if (codes && codes.length > 0) {
+    const codeList = codes.slice(0, 3).map(c => {
+      const verified = c.last_verified ? ` (verified ${formatDate(c.last_verified)})` : '';
+      return `${c.code}${c.discount_text ? ` - ${c.discount_text}` : ''}${verified}`;
+    }).join(', ');
+    answerText = `The current verified codes for ${brand} are: ${codeList}. Each includes an exact verification timestamp.`;
+  } else {
+    answerText = `Currently no verified codes available for ${brand}.`;
+  }
+  
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [{
+      "@type": "Question",
+      "name": `What are the best verified ${brand} codes today?`,
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": answerText
+      }
+    }]
+  };
+  
+  schemaEl.textContent = JSON.stringify(schema, null, 2);
 }
 
 function renderCodeCard(item, brandLabel) {
@@ -47,6 +88,10 @@ async function loadBrand(brand = "demo") {
   try {
     const res = await fetch(`${API_BASE}/api/brand?brand=${encodeURIComponent(brand)}`);
     const data = await res.json();
+    
+    // Update Q&A block and FAQ schema
+    updateQABlock(brand, data.codes);
+    updateFAQSchema(brand, data.codes);
     
     if (data.codes && data.codes.length > 0) {
       el.innerHTML = data.codes.map(c => renderCodeCard(c, brand)).join("");
