@@ -5,7 +5,18 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': 'https://luxecodes.com',
+  'Access-Control-Allow-Methods': 'GET,OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type'
+};
+
 export async function handler(event) {
+  // Handle preflight
+  if (event.httpMethod === 'OPTIONS') {
+    return { statusCode: 204, headers: CORS_HEADERS, body: '' };
+  }
+
   try {
     // Read ?brand=<slug>
     const url = new URL(event.rawUrl || `https://x.local${event.path}${event.rawQueryString ? '?' + event.rawQueryString : ''}`);
@@ -14,7 +25,7 @@ export async function handler(event) {
     if (!brandSlug) {
       return {
         statusCode: 400,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
         body: JSON.stringify({ error: 'Missing brand query param' }),
       };
     }
@@ -29,7 +40,7 @@ export async function handler(event) {
     if (brandErr || !brandRow) {
       return {
         statusCode: 404,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
         body: JSON.stringify({ error: 'Brand not found', details: brandErr?.message }),
       };
     }
@@ -44,7 +55,7 @@ export async function handler(event) {
     if (codesErr) {
       return {
         statusCode: 500,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
         body: JSON.stringify({ error: 'Failed to load codes', details: codesErr.message }),
       };
     }
@@ -53,7 +64,7 @@ export async function handler(event) {
     if (!codes || codes.length === 0) {
       return {
         statusCode: 200,
-        headers: { 'Content-Type': 'application/json' },
+        headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
         body: JSON.stringify({ brand: brandSlug, count: 0, codes: [] }),
       };
     }
@@ -81,13 +92,13 @@ export async function handler(event) {
 
     return {
       statusCode: 200,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
       body: JSON.stringify({ brand: brandSlug, count: enriched.length, codes: enriched }),
     };
   } catch (err) {
     return {
       statusCode: 500,
-      headers: { 'Content-Type': 'application/json' },
+      headers: { ...CORS_HEADERS, 'Content-Type': 'application/json' },
       body: JSON.stringify({ error: 'Unhandled error', details: String(err) }),
     };
   }
