@@ -1,3 +1,4 @@
+console.log('LC codes.js loaded');
 import { formatDate } from './formatDate.js';
 
 const API_BASE = "";
@@ -189,24 +190,40 @@ async function loadBrand(brand = "demo") {
 async function fetchAndRenderLiveCodes() {
   console.log('LIVE render start');
   const grid = document.querySelector('.cards-grid');
-  if (!grid) return;
-  
+  console.log('Grid found:', grid);
+
+  if (!grid) {
+    console.error('No .cards-grid found');
+    return;
+  }
+
+  // Use the first existing card as a template if present
   const template = grid.querySelector('.coupon-card');
-  if (!template) return;
-  
+  console.log('Template found:', template);
+
   try {
-    const response = await fetch('/.netlify/functions/getBrandCodes');
-    const { codes = [] } = await response.json();
-    
-    grid.innerHTML = ''; // clear demo/mocks
-    
+    console.log('Fetching from API...');
+    const resp = await fetch('/.netlify/functions/getBrandCodes');
+    console.log('Response status:', resp.status);
+    const data = await resp.json();
+    console.log('API data:', data);
+
+    const codes = Array.isArray(data?.codes) ? data.codes : [];
+    console.log('Codes length:', codes.length);
+
+    if (!template) {
+      console.warn('No template card; leaving grid as-is so we can see the issue.');
+      return;
+    }
+
+    grid.innerHTML = '';
     codes.forEach(item => {
       const card = template.cloneNode(true);
-      
+
       // Fill brand name
-      const brandName = card.querySelector('.brand-name');
-      if (brandName) brandName.textContent = item.brand || 'Unknown';
-      
+      const nameEl = card.querySelector('.brand-name');
+      if (nameEl) nameEl.textContent = item.brand || 'Unknown';
+
       // Verified badge
       const v = card.querySelector('.verified');
       if (v) {
@@ -217,53 +234,60 @@ async function fetchAndRenderLiveCodes() {
           v.style.display = 'none';
         }
       }
-      
-      // Code text
+
+      // Code
       const codeEl = card.querySelector('.code');
       if (codeEl) codeEl.textContent = item.code || '';
-      
+
       // Discount
       const d = card.querySelector('.discount');
       if (d) d.textContent = item.discount_text || '';
-      
-      // Remove any DEMO badge if present
-      card.querySelector('.badge-demo')?.remove();
-      
-      // Logo handling
-      const brandEl = card.querySelector('.brand') || card;
+
+      // Logo or initials
+      const brandWrap = card.querySelector('.brand') || card;
       const img = card.querySelector('.brand-logo');
-      const initials = card.querySelector('.initials-badge') || document.createElement('div');
-      initials.className = 'initials-badge';
-      initials.textContent = (item.brand || 'NA').split(' ').map(s=>s[0]).slice(0,2).join('').toUpperCase();
-      
+      const initialsText = (item.brand || 'NA').split(' ').map(s=>s?.[0] || '').join('').slice(0,2).toUpperCase();
+
       if (item.logo_url) {
         if (!img) {
           const ni = document.createElement('img');
           ni.className = 'brand-logo';
-          brandEl.prepend(ni);
+          brandWrap.prepend(ni);
         }
-        const logoImg = card.querySelector('.brand-logo');
-        if (logoImg) {
-          logoImg.src = item.logo_url;
-          logoImg.alt = (item.brand || 'Brand') + ' logo';
-          logoImg.onerror = () => {
-            logoImg.remove();
-            brandEl.prepend(initials);
-          };
-        }
+        const logo = card.querySelector('.brand-logo');
+        logo.src = item.logo_url;
+        logo.alt = (item.brand || 'Brand') + ' logo';
+        logo.onerror = () => {
+          logo.remove();
+          const badge = document.createElement('div');
+          badge.className = 'initials-badge';
+          badge.textContent = initialsText;
+          brandWrap.prepend(badge);
+        };
       } else {
-        img?.remove();
-        brandEl.prepend(initials);
+        if (img) img.remove();
+        const badge = document.createElement('div');
+        badge.className = 'initials-badge';
+        badge.textContent = initialsText;
+        brandWrap.prepend(badge);
       }
-      
+
+      // Remove any demo badge if present
+      card.querySelector('.badge-demo')?.remove();
+
       grid.appendChild(card);
     });
-  } catch (error) {
-    console.error('Error fetching live codes:', error);
+  } catch (err) {
+    console.error('LIVE render error:', err);
   }
 }
 
-document.addEventListener("DOMContentLoaded", () => {
-  loadBrand(getBrand());
-  fetchAndRenderLiveCodes();
+document.addEventListener('DOMContentLoaded', () => {
+  try { fetchAndRenderLiveCodes(); } catch(e) { console.error('DOMContentLoaded hook error', e); }
+});
+// Fallback after full load, just in case
+window.addEventListener('load', () => {
+  setTimeout(() => {
+    try { fetchAndRenderLiveCodes(); } catch(e) { console.error('window.load hook error', e); }
+  }, 500);
 });
