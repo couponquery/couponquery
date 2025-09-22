@@ -272,6 +272,69 @@
         <!-- Cards will be populated here -->
       </section>
     </div>
+
+    <!-- LIVE codes (temporary render) -->
+    <div id="live-codes"></div>
+    <script>
+    (async () => {
+      const r = await fetch('/.netlify/functions/getBrandCodes');
+      const { codes } = await r.json();
+      const wrap = document.getElementById('live-codes');
+      wrap.innerHTML = '';
+      codes.forEach(item => {
+        const card = document.createElement('div');
+        card.style.border = '1px solid #e3e7ef';
+        card.style.borderRadius = '14px';
+        card.style.padding = '16px';
+        card.style.margin = '16px 0';
+
+        const top = document.createElement('div');
+        top.style.display = 'flex';
+        top.style.alignItems = 'center';
+        top.style.gap = '12px';
+
+        if (item.logo_url) {
+          const img = document.createElement('img');
+          img.src = item.logo_url;
+          img.alt = (item.brand || 'Brand') + ' logo';
+          img.width = 48; img.height = 48;
+          img.loading = 'lazy';
+          img.style.borderRadius = '8px';
+          top.appendChild(img);
+        } else {
+          const badge = document.createElement('div');
+          const initials = (item.brand || 'NA').split(' ').map(s=>s[0]).slice(0,2).join('').toUpperCase();
+          badge.textContent = initials;
+          Object.assign(badge.style, {width:'48px',height:'48px',display:'grid',placeItems:'center',border:'1px solid #cfd6e4',borderRadius:'8px',fontWeight:'600'});
+          top.appendChild(badge);
+        }
+
+        const meta = document.createElement('div');
+        const name = document.createElement('div');
+        name.textContent = item.brand || 'Unknown';
+        name.style.fontWeight = '700';
+        const v = document.createElement('div');
+        v.textContent = item.last_verified ? 'Verified ' + new Date(item.last_verified).toLocaleString() : '';
+        v.style.fontSize = '12px'; v.style.opacity = '0.7';
+        meta.appendChild(name); meta.appendChild(v);
+        top.appendChild(meta);
+
+        const code = document.createElement('div');
+        code.textContent = item.code || '';
+        code.style.fontSize = '24px';
+        code.style.fontWeight = '800';
+        code.style.margin = '12px 0';
+
+        const disc = document.createElement('div');
+        disc.textContent = item.discount_text || '';
+
+        card.appendChild(top);
+        card.appendChild(code);
+        card.appendChild(disc);
+        wrap.appendChild(card);
+      });
+    })();
+    </script>
   </main>
 
   <footer>
