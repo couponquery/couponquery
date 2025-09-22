@@ -1,6 +1,7 @@
 [build]
-  publish = "public"
-  functions = "sites/luxecodes/netlify/functions"
+  base = "sites/luxecodes"
+  publish = "sites/luxecodes"
+  functions = "netlify/functions"
 
 [[redirects]]
   from = "/api/*"
