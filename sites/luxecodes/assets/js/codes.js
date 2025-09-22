@@ -80,7 +80,7 @@ const VerifiedIcon = () => `
 
 function renderCodeCard(item, brandLabel) {
   const verifiedHtml = item.last_verified
-    ? `<div class="text-sm text-gray-500 flex items-center gap-1">
+    ? `<div class="text-sm text-gray-500 flex items-center gap-1 verified">
          <span class="inline-block text-green-700">${VerifiedIcon()}</span>
          Verified ${fmtDate(item.last_verified)}
        </div>`
@@ -88,9 +88,9 @@ function renderCodeCard(item, brandLabel) {
 
   return `
     <div class="card">
-      <h3>${brandLabel || ''}</h3>
+      <h3 class="brand">${brandLabel || ''}</h3>
       <div class="row">
-        <strong>${item.code}</strong>
+        <strong class="code">${item.code}</strong>
         ${item.discount_text ? `<span>— ${item.discount_text}</span>` : ``}
       </div>
       ${item.terms ? `<div class="meta">${item.terms}</div>` : ``}

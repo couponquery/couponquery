@@ -1,0 +1,77 @@
+/* Luxe theme tokens */
+:root {
+  --navy: #0a1220;
+  --ink: #0f1728;
+  --royal: #102a5c;
+  --gold: #d4af37;
+  --linen: #f8f5ee;
+  --muted: #6b7280;
+}
+
+/* Page */
+body { background: var(--navy); color: var(--linen); }
+
+/* Header brand */
+.site-title { color: var(--linen); letter-spacing: .3px; }
+
+/* Headings */
+h1, h2, h3 { font-weight: 600; color: var(--linen); }
+
+/* Hero subtitle */
+.lede { color: #cfd6e6; }
+
+/* Buttons */
+.btn {
+  background: transparent;
+  border: 1.5px solid var(--linen);
+  color: var(--linen);
+  border-radius: 12px;
+  padding: .6rem .9rem;
+  transition: background .15s ease;
+}
+.btn:hover { background: rgba(255,255,255,.06); }
+
+/* Cards */
+.card {
+  background: linear-gradient(180deg, #111827 0%, #0b1324 100%);
+  border: 1px solid rgba(212,175,55,.35);
+  box-shadow: 0 6px 22px rgba(0,0,0,.35);
+  color: var(--linen);
+  border-radius: 16px;
+}
+
+/* Brand tag on card */
+.card .brand { color: #a7b3cc; }
+
+/* Code line */
+.card .code {
+  font-weight: 700;
+  letter-spacing: .3px;
+  color: var(--linen);
+}
+
+/* Terms and dates */
+.card .meta { color: #a7b3cc; }
+
+/* Verified line */
+.card .verified {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+  color: var(--linen);
+}
+.card .verified::before {
+  content: "✓";
+  display: inline-block;
+  width: 1.05rem; height: 1.05rem;
+  line-height: 1.05rem; text-align: center;
+  border-radius: 999px;
+  background: var(--gold);
+  color: #0a1220;
+  font-weight: 700;
+  font-size: .8rem;
+}
+
+/* Footer */
+.site-footer { color: #bfc6d6; }
+.site-footer a { color: var(--gold); }

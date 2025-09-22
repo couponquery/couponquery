@@ -64,7 +64,7 @@
 </head>
 <body>
   <header>
-    <h1>LuxeCodes</h1>
+    <h1 class="site-title">LuxeCodes</h1>
     <nav>
       <a href="/">Brands</a>
       <a href="/about">About</a>
@@ -74,7 +74,7 @@
 
   <section class="hero">
     <h2>Exclusive Luxury Promo Codes</h2>
-    <p>Verified offers from the world's finest brands.</p>
+    <p class="lede">Verified offers from the world's finest brands.</p>
     <a class="btn" href="/brands">Browse Codes</a>
   </section>
 
@@ -91,11 +91,34 @@
     <div id="codes" class="brands" aria-live="polite"></div>
   </section>
 
-  <footer>
+  <footer class="site-footer">
     <p>&copy; 2025 LuxeCodes. All rights reserved. <a href="/privacy">Privacy</a> | <a href="/terms">Terms</a></p>
   </footer>
 
   <script type="module" src="/assets/js/codes.js"></script>
   <script src="/assets/js/ads.js"></script>
+  <script>
+    (function () {
+      if (location.search.includes('theme=luxe')) {
+        var link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = '/assets/theme-luxe.css';
+        document.head.appendChild(link);
+
+        var g = document.createElement('link');
+        g.rel = 'stylesheet';
+        g.href = 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;600&display=swap';
+        document.head.appendChild(g);
+
+        document.documentElement.style.setProperty('--font-serif', '"Playfair Display", serif');
+        document.documentElement.style.setProperty('--font-sans', 'Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif');
+
+        document.querySelectorAll('h1,h2,h3').forEach(function (el) {
+          el.style.fontFamily = 'var(--font-serif)';
+        });
+        document.body.style.fontFamily = 'var(--font-sans)';
+      }
+    })();
+  </script>
 </body>
 </html>
