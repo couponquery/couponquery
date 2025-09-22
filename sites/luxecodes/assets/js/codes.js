@@ -62,11 +62,30 @@ function updateFAQSchema(brand, codes) {
 
 const fmtDate = (iso) => {
   if (!iso) return null;
-  try { return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }); }
-  catch { return null; }
+  try {
+    return new Intl.DateTimeFormat('en-US', {
+      year: 'numeric', month: 'short', day: 'numeric'
+    }).format(new Date(iso));
+  } catch {
+    return null;
+  }
 };
 
+const VerifiedIcon = () => `
+  <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none">
+    <circle cx="12" cy="12" r="11" stroke="currentColor" opacity="0.3"></circle>
+    <path d="M7 12.5l3 3 7-7" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"></path>
+  </svg>
+`;
+
 function renderCodeCard(item, brandLabel) {
+  const verifiedHtml = item.last_verified
+    ? `<div class="text-sm text-gray-500 flex items-center gap-1">
+         <span class="inline-block text-green-700">${VerifiedIcon()}</span>
+         Verified ${fmtDate(item.last_verified)}
+       </div>`
+    : `<div class="text-sm text-gray-500">Not verified yet</div>`;
+
   return `
     <div class="card">
       <h3>${brandLabel || ''}</h3>
@@ -75,10 +94,7 @@ function renderCodeCard(item, brandLabel) {
         ${item.discount_text ? `<span>— ${item.discount_text}</span>` : ``}
       </div>
       ${item.terms ? `<div class="meta">${item.terms}</div>` : ``}
-      ${item.last_verified
-        ? `<div class="text-sm text-gray-500">Verified ${fmtDate(item.last_verified)}</div>`
-        : `<div class="text-sm text-gray-500">Not verified yet</div>`
-      }
+      ${verifiedHtml}
       <button class="btn" data-copy="${item.code}">Copy Code</button>
     </div>
   `;
@@ -125,7 +141,16 @@ async function loadBrand(brand = "demo") {
     }
   } catch (e) {
     console.error(e);
-    el.innerHTML = "<div>Unable to load codes</div>";
+    const container = document.querySelector('#codes-list') || document.body;
+    const banner = document.createElement('div');
+    banner.className = 'p-3 rounded-xl border border-red-200 bg-red-50 text-red-800 mb-3';
+    banner.innerHTML = `
+      Unable to load codes right now.
+      <button id="retry-load" class="ml-2 px-2 py-1 rounded-lg border border-red-300 bg-white text-red-700">Retry</button>
+    `;
+    container.prepend(banner);
+    const btn = banner.querySelector('#retry-load');
+    if (btn) btn.addEventListener('click', () => loadBrand(brand));
   }
 }
 document.addEventListener("DOMContentLoaded", () => loadBrand(getBrand()));
