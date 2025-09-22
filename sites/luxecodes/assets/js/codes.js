@@ -186,4 +186,83 @@ async function loadBrand(brand = "demo") {
     if (btn) btn.addEventListener('click', () => loadBrand(brand));
   }
 }
-document.addEventListener("DOMContentLoaded", () => loadBrand(getBrand()));
+async function fetchAndRenderLiveCodes() {
+  const grid = document.querySelector('.cards-grid');
+  if (!grid) return;
+  
+  const template = grid.querySelector('.coupon-card');
+  if (!template) return;
+  
+  try {
+    const response = await fetch('/.netlify/functions/getBrandCodes');
+    const { codes = [] } = await response.json();
+    
+    grid.innerHTML = ''; // clear demo/mocks
+    
+    codes.forEach(item => {
+      const card = template.cloneNode(true);
+      
+      // Fill brand name
+      const brandName = card.querySelector('.brand-name');
+      if (brandName) brandName.textContent = item.brand || 'Unknown';
+      
+      // Verified badge
+      const v = card.querySelector('.verified');
+      if (v) {
+        if (item.last_verified) {
+          v.textContent = 'Verified ' + new Date(item.last_verified).toLocaleString();
+          v.style.display = '';
+        } else {
+          v.style.display = 'none';
+        }
+      }
+      
+      // Code text
+      const codeEl = card.querySelector('.code');
+      if (codeEl) codeEl.textContent = item.code || '';
+      
+      // Discount
+      const d = card.querySelector('.discount');
+      if (d) d.textContent = item.discount_text || '';
+      
+      // Remove any DEMO badge if present
+      card.querySelector('.badge-demo')?.remove();
+      
+      // Logo handling
+      const brandEl = card.querySelector('.brand') || card;
+      const img = card.querySelector('.brand-logo');
+      const initials = card.querySelector('.initials-badge') || document.createElement('div');
+      initials.className = 'initials-badge';
+      initials.textContent = (item.brand || 'NA').split(' ').map(s=>s[0]).slice(0,2).join('').toUpperCase();
+      
+      if (item.logo_url) {
+        if (!img) {
+          const ni = document.createElement('img');
+          ni.className = 'brand-logo';
+          brandEl.prepend(ni);
+        }
+        const logoImg = card.querySelector('.brand-logo');
+        if (logoImg) {
+          logoImg.src = item.logo_url;
+          logoImg.alt = (item.brand || 'Brand') + ' logo';
+          logoImg.onerror = () => {
+            logoImg.remove();
+            brandEl.prepend(initials);
+          };
+        }
+      } else {
+        img?.remove();
+        brandEl.prepend(initials);
+      }
+      
+      grid.appendChild(card);
+    });
+  } catch (error) {
+    console.error('Error fetching live codes:', error);
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadBrand(getBrand());
+  fetchAndRenderLiveCodes();
+});
