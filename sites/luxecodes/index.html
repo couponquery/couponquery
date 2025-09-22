@@ -438,27 +438,18 @@
     async function loadCards() {
       const grid = document.getElementById('cards-grid');
       
-      try {
-        // Try to fetch real data first
-        const response = await fetch('/.netlify/functions/getBrandCodes');
-        const data = await response.json();
-        
-        if (data.codes && data.codes.length > 0) {
-          // Use real data
-          grid.innerHTML = '';
-          data.codes.slice(0, 6).forEach(code => {
-            grid.appendChild(createCard(code, data.brand));
-          });
-        } else {
-          throw new Error('No codes available');
-        }
-      } catch (error) {
-        // Fallback to mock data
-        console.log('Using mock data for layout preview');
+      // Fetch real data
+      const response = await fetch('/.netlify/functions/getBrandCodes');
+      const data = await response.json();
+      
+      if (data.codes && data.codes.length > 0) {
+        // Use real data
         grid.innerHTML = '';
-        mockData.codes.forEach(code => {
-          grid.appendChild(createCard(code, mockData.brand));
+        data.codes.slice(0, 6).forEach(code => {
+          grid.appendChild(createCard(code, data.brand));
         });
+      } else {
+        grid.innerHTML = '<p>No codes available</p>';
       }
     }
 
