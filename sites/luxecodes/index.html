@@ -4,17 +4,16 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>LuxeCodes – Verified Luxury Promo Codes</title>
-  <meta name="description" content="Verified luxury promo codes, updated daily. Clean, fast, trustworthy." />
+  <meta name="description" content="Verified luxury promo codes from top brands. Clean, fast, trustworthy." />
   <style>
     :root { 
-      --french-blue: #1e3a8a; 
-      --french-blue-light: #3b82f6; 
-      --french-blue-dark: #1e40af; 
-      --gold: #f59e0b; 
+      --french-blue: #0B3B75; 
+      --gold: #F4B400; 
       --ink: #1f2937; 
       --muted: #6b7280; 
       --line: #e5e7eb; 
       --bg: #ffffff;
+      --light-blue: #f0f9ff;
     }
     
     * { box-sizing: border-box; }
@@ -37,9 +36,6 @@
       background: var(--bg);
       border-bottom: 1px solid var(--line);
       padding: 20px 0;
-      position: sticky;
-      top: 0;
-      z-index: 100;
     }
     
     .header-content {
@@ -94,7 +90,7 @@
     /* Grid */
     .grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 32px;
       margin: 60px 0 80px;
     }
@@ -103,15 +99,14 @@
     .card {
       background: var(--bg);
       border: 1px solid var(--line);
-      border-radius: 16px;
-      padding: 32px;
-      position: relative;
+      border-radius: 14px;
+      padding: 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
       transition: all 0.3s ease;
-      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
     
     .card:hover {
-      box-shadow: 0 8px 25px rgba(30, 58, 138, 0.15);
+      box-shadow: 0 8px 25px rgba(14, 58, 117, 0.15);
       transform: translateY(-2px);
     }
     
@@ -119,11 +114,11 @@
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
     }
     
     .brand-logo {
-      font-size: 18px;
+      font-size: 16px;
       font-weight: 700;
       color: var(--french-blue);
       text-transform: uppercase;
@@ -133,45 +128,45 @@
     .verification-pill {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
-      background: #f0f9ff;
+      gap: 6px;
+      background: var(--light-blue);
       border: 1px solid #bae6fd;
       border-radius: 20px;
-      padding: 6px 12px;
-      font-size: 13px;
+      padding: 4px 10px;
+      font-size: 12px;
       color: var(--french-blue);
       font-weight: 500;
     }
     
     .verification-dot {
-      width: 8px;
-      height: 8px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background: var(--gold);
     }
     
     .code-container {
-      margin: 24px 0;
+      margin: 20px 0;
     }
     
     .promo-code {
       font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
-      font-size: 24px;
+      font-size: 20px;
       font-weight: 700;
       color: var(--french-blue);
-      border: 2px dashed var(--french-blue);
-      border-radius: 12px;
+      border: 2px dashed #d1d5db;
+      border-radius: 8px;
       padding: 16px 20px;
       text-align: center;
-      margin: 0 0 20px 0;
-      background: #f8fafc;
+      margin: 0 0 16px 0;
+      background: #f9fafb;
     }
     
     .copy-btn {
       background: var(--french-blue);
       color: white;
       border: none;
-      border-radius: 10px;
+      border-radius: 8px;
       padding: 12px 24px;
       font-size: 16px;
       font-weight: 600;
@@ -181,7 +176,7 @@
     }
     
     .copy-btn:hover {
-      background: var(--french-blue-dark);
+      background: #1e40af;
       transform: translateY(-1px);
     }
     
@@ -192,7 +187,7 @@
     .discount-text {
       font-size: 16px;
       color: var(--ink);
-      margin: 20px 0;
+      margin: 16px 0;
       font-weight: 500;
     }
     
@@ -221,6 +216,12 @@
     
     /* Responsive */
     @media (max-width: 768px) {
+      .grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        margin: 40px 0 60px;
+      }
+      
       .hero h1 {
         font-size: 36px;
       }
@@ -229,19 +230,12 @@
         font-size: 18px;
       }
       
-      .grid {
-        grid-template-columns: 1fr;
-        gap: 24px;
-        margin: 40px 0 60px;
+      .container {
+        padding: 0 16px;
       }
       
       .card {
-        padding: 24px;
-      }
-      
-      .promo-code {
-        font-size: 20px;
-        padding: 12px 16px;
+        padding: 20px;
       }
     }
   </style>
@@ -281,27 +275,37 @@
   </footer>
 
   <script>
-    // Mock data for layout testing
+    // Mock data for luxury brands
     const mockData = {
-      brand: "demo",
+      brand: "luxury",
       codes: [
         {
-          code: "WELCOME10",
-          discount_text: "10% off your first order",
-          terms: "Valid until December 31, 2025. New customers only.",
-          last_verified: "2025-01-15T10:30:00Z"
+          code: "HERMES20",
+          discount_text: "20% off handbags and accessories",
+          terms: "Valid on full-price items. Excludes limited editions.",
+          last_verified: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+          brand: "Hermes"
         },
         {
-          code: "LUXE20",
-          discount_text: "20% off luxury items",
-          terms: "Minimum purchase $200. Excludes sale items.",
-          last_verified: "2025-01-14T15:45:00Z"
+          code: "GUCCI15",
+          discount_text: "15% off your first order",
+          terms: "New customers only. Minimum spend $500.",
+          last_verified: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(), // 5 hours ago
+          brand: "Gucci"
         },
         {
-          code: "SAVE15",
-          discount_text: "15% off everything",
-          terms: "One-time use per customer. Cannot combine with other offers.",
-          last_verified: "2025-01-13T09:20:00Z"
+          code: "ZAPPOS25",
+          discount_text: "25% off luxury shoes",
+          terms: "Free shipping on orders over $100.",
+          last_verified: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
+          brand: "Zappos"
+        },
+        {
+          code: "FARFETCH30",
+          discount_text: "30% off designer fashion",
+          terms: "Valid until end of month. Cannot combine with other offers.",
+          last_verified: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
+          brand: "Farfetch"
         }
       ]
     };
@@ -332,11 +336,8 @@
         } else if (diffInSeconds < 86400) {
           const hours = Math.floor(diffInSeconds / 3600);
           return `Verified ${hours} hour${hours !== 1 ? 's' : ''} ago`;
-        } else if (diffInSeconds < 2592000) {
-          const days = Math.floor(diffInSeconds / 86400);
-          return `Verified ${days} day${days !== 1 ? 's' : ''} ago`;
         } else {
-          // Fallback to date format for older entries
+          // Fallback to date format for entries older than 24 hours
           return 'Verified ' + formatDate(isoString);
         }
       } catch {
@@ -344,7 +345,7 @@
       }
     }
 
-    function createCard(codeData, brandName) {
+    function createCard(codeData) {
       const card = document.createElement('article');
       card.className = 'card';
       
@@ -352,7 +353,7 @@
       
       card.innerHTML = `
         <div class="card-header">
-          <div class="brand-logo">${brandName.toUpperCase()}</div>
+          <div class="brand-logo">${codeData.brand.toUpperCase()}</div>
           <div class="verification-pill">
             <div class="verification-dot"></div>
             <span>${verifiedTime}</span>
@@ -366,7 +367,7 @@
         
         <div class="discount-text">${codeData.discount_text}</div>
         
-        <a href="#" class="shop-now" onclick="shopNow('${codeData.code}')">Shop Now →</a>
+        <a href="#" class="shop-now" onclick="shopNow('${codeData.code}', '${codeData.brand}')">Shop Now →</a>
       `;
       
       return card;
@@ -392,10 +393,10 @@
       });
     }
 
-    function shopNow(code) {
+    function shopNow(code, brand) {
       // In a real implementation, this would navigate to the brand's website
-      console.log(`Shopping with code: ${code}`);
-      alert(`Redirecting to shop with code: ${code}`);
+      console.log(`Shopping with ${brand} code: ${code}`);
+      alert(`Redirecting to ${brand} with code: ${code}`);
     }
 
     async function loadCards() {
@@ -409,8 +410,11 @@
         if (data.codes && data.codes.length > 0) {
           // Use real data
           grid.innerHTML = '';
-          data.codes.slice(0, 6).forEach(code => {
-            grid.appendChild(createCard(code, data.brand));
+          data.codes.slice(0, 4).forEach(code => {
+            grid.appendChild(createCard({
+              ...code,
+              brand: data.brand || 'Brand'
+            }));
           });
         } else {
           throw new Error('No codes available');
@@ -420,7 +424,7 @@
         console.log('Using mock data for layout preview');
         grid.innerHTML = '';
         mockData.codes.forEach(code => {
-          grid.appendChild(createCard(code, mockData.brand));
+          grid.appendChild(createCard(code));
         });
       }
     }
