@@ -9,6 +9,7 @@
   <title>LuxeCodes</title>
   <link rel="canonical" href="https://luxecodes.com/">
   <meta name="robots" content="index,follow">
+  <meta name="theme-color" content="#0a1220">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
   <script>
     window.LUXE_ENABLE_ADS = false; // Set to true in Netlify env vars
@@ -72,6 +73,11 @@
     </nav>
   </header>
 
+  <div id="err" class="error-banner" hidden>
+    <span class="error-text">We could not reach the offers right now.</span>
+    <button class="btn btn-retry" type="button">Retry</button>
+  </div>
+
   <section class="hero">
     <h2>Exclusive Luxury Promo Codes</h2>
     <p class="lede">Verified offers from the world's finest brands.</p>
@@ -99,25 +105,27 @@
   <script src="/assets/js/ads.js"></script>
   <script>
     (function () {
-      if (location.search.includes('theme=luxe')) {
-        var link = document.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = '/assets/theme-luxe.css';
-        document.head.appendChild(link);
+      if (!location.search.includes('theme=luxe')) return;
+      
+      var link = document.createElement('link');
+      link.rel = 'stylesheet';
+      link.href = '/assets/theme-luxe.css';
+      document.head.appendChild(link);
 
-        var g = document.createElement('link');
-        g.rel = 'stylesheet';
-        g.href = 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;600&display=swap';
-        document.head.appendChild(g);
+      var g = document.createElement('link');
+      g.rel = 'stylesheet';
+      g.href = 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Inter:wght@400;600&display=swap';
+      document.head.appendChild(g);
 
-        document.documentElement.style.setProperty('--font-serif', '"Playfair Display", serif');
-        document.documentElement.style.setProperty('--font-sans', 'Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif');
+      document.documentElement.style.setProperty('--font-serif', '"Playfair Display", serif');
+      document.documentElement.style.setProperty('--font-sans', 'Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif');
 
-        document.querySelectorAll('h1,h2,h3').forEach(function (el) {
-          el.style.fontFamily = 'var(--font-serif)';
-        });
-        document.body.style.fontFamily = 'var(--font-sans)';
-      }
+      document.querySelectorAll('h1,h2,h3').forEach(function (el) {
+        el.style.fontFamily = 'var(--font-serif)';
+      });
+      document.body.style.fontFamily = 'var(--font-sans)';
+      
+      document.documentElement.classList.add('theme-luxe');
     })();
   </script>
 </body>

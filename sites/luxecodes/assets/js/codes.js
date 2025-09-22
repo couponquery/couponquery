@@ -71,6 +71,17 @@ const fmtDate = (iso) => {
   }
 };
 
+const fmtVerifiedDate = (iso) => {
+  if (!iso) return null;
+  try {
+    const d = new Date(iso);
+    if (isNaN(d)) return null;
+    return new Intl.DateTimeFormat(undefined, {
+      year: 'numeric', month: 'short', day: '2-digit'
+    }).format(d);
+  } catch { return null; }
+};
+
 const VerifiedIcon = () => `
   <svg aria-hidden="true" width="14" height="14" viewBox="0 0 24 24" fill="none">
     <circle cx="12" cy="12" r="11" stroke="currentColor" opacity="0.3"></circle>
@@ -79,12 +90,10 @@ const VerifiedIcon = () => `
 `;
 
 function renderCodeCard(item, brandLabel) {
-  const verifiedHtml = item.last_verified
-    ? `<div class="text-sm text-gray-500 flex items-center gap-1 verified">
-         <span class="inline-block text-green-700">${VerifiedIcon()}</span>
-         Verified ${fmtDate(item.last_verified)}
-       </div>`
-    : `<div class="text-sm text-gray-500">Not verified yet</div>`;
+  const verifiedText = fmtVerifiedDate(item.last_verified);
+  const verifiedHtml = verifiedText
+    ? `<div class="verified">Verified ${verifiedText}</div>`
+    : `<div class="verified is-missing">Not verified yet</div>`;
 
   return `
     <div class="card">
@@ -95,9 +104,33 @@ function renderCodeCard(item, brandLabel) {
       </div>
       ${item.terms ? `<div class="meta">${item.terms}</div>` : ``}
       ${verifiedHtml}
-      <button class="btn" data-copy="${item.code}">Copy Code</button>
+      <div class="actions">
+        <button class="btn" data-copy="${item.code}">Copy Code</button>
+      </div>
     </div>
   `;
+}
+
+const err = document.getElementById('err');
+const retry = err ? err.querySelector('.btn-retry') : null;
+
+async function fetchCodesSafe(...args) {
+  try {
+    const res = await fetch(...args);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    err?.setAttribute('hidden', '');
+    return res;
+  } catch (e) {
+    err?.removeAttribute('hidden');
+    throw e;
+  }
+}
+
+if (retry) {
+  retry.addEventListener('click', () => {
+    err.setAttribute('hidden', '');
+    loadBrand(getBrand());
+  });
 }
 
 async function loadBrand(brand = "demo") {
@@ -108,7 +141,7 @@ async function loadBrand(brand = "demo") {
   el.innerHTML = "<div>Loading…</div>";
   
   try {
-    const res = await fetch(`${API_BASE}/api/brand?brand=${encodeURIComponent(brand)}`);
+    const res = await fetchCodesSafe(`${API_BASE}/api/brand?brand=${encodeURIComponent(brand)}`);
     const data = await res.json();
     
     // Update Q&A block and FAQ schema

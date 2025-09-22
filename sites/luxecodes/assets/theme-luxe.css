@@ -8,8 +8,8 @@
   --muted: #6b7280;
 }
 
-/* Page */
-body { background: var(--navy); color: var(--linen); }
+/* Ensure scoping */
+.theme-luxe body { background: var(--navy); color: var(--linen); }
 
 /* Header brand */
 .site-title { color: var(--linen); letter-spacing: .3px; }
@@ -75,3 +75,30 @@ h1, h2, h3 { font-weight: 600; color: var(--linen); }
 /* Footer */
 .site-footer { color: #bfc6d6; }
 .site-footer a { color: var(--gold); }
+
+/* Luxe spacing polish */
+.section { padding: 3rem 0; }
+.hero { padding: 4rem 0 3rem; }
+h1,h2 { letter-spacing: 0.2px; }
+
+/* Copy button alignment inside cards */
+.card .actions { margin-top: .75rem; }
+
+/* Subtle divider */
+.rule { height: 1px; background: rgba(212,175,55,.25); border: 0; }
+
+/* Verified color when missing */
+.card .verified.is-missing { opacity: .75; }
+.card .verified.is-missing::before { background: #9aa3b2; color: #0a1220; content: "•"; }
+
+/* Error banner (only visible when theme is active) */
+.error-banner {
+  background: #2a1f1f;
+  border: 1px solid rgba(212,175,55,.35);
+  color: #f8f5ee;
+  padding: .75rem 1rem;
+  border-radius: 12px;
+  margin: 1rem 0 0;
+  display: flex; align-items: center; gap: .75rem;
+}
+.error-banner .btn-retry { border-color: var(--gold); }
