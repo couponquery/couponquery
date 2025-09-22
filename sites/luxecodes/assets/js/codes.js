@@ -187,6 +187,7 @@ async function loadBrand(brand = "demo") {
   }
 }
 async function fetchAndRenderLiveCodes() {
+  console.log('LIVE render start');
   const grid = document.querySelector('.cards-grid');
   if (!grid) return;
   
