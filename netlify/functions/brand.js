@@ -21,11 +21,11 @@ export async function handler(event) {
       };
     }
 
-    // Look up the brand by slug
+    // Look up the brand by name
     const { data: brandRow, error: brandErr } = await supabase
       .from('brands')
-      .select('id, slug, name')
-      .eq('slug', brandSlug)
+      .select('id, name')
+      .eq('name', brandSlug)
       .single();
 
     if (brandErr || !brandRow) {
