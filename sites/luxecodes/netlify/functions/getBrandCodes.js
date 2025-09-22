@@ -47,6 +47,11 @@ exports.handler = async function(event) {
       body: JSON.stringify({ codes: payload })
     };
   } catch (err) {
-    return { statusCode: 500, body: JSON.stringify({ error: err.message }) };
+    console.error('getBrandCodes error:', { message: err.message, stack: err.stack });
+    return {
+      statusCode: 500,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ error: err.message })
+    };
   }
 };
