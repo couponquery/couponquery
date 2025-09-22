@@ -60,19 +60,25 @@ function updateFAQSchema(brand, codes) {
   schemaEl.textContent = JSON.stringify(schema, null, 2);
 }
 
+const fmtDate = (iso) => {
+  if (!iso) return null;
+  try { return new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }); }
+  catch { return null; }
+};
+
 function renderCodeCard(item, brandLabel) {
-  const verified = item.last_verified
-    ? formatDate(item.last_verified)
-    : null;
   return `
     <div class="card">
       <h3>${brandLabel || ''}</h3>
-      ${verified ? `<div class="meta">Verified ${verified}</div>` : ``}
       <div class="row">
         <strong>${item.code}</strong>
         ${item.discount_text ? `<span>— ${item.discount_text}</span>` : ``}
       </div>
       ${item.terms ? `<div class="meta">${item.terms}</div>` : ``}
+      ${item.last_verified
+        ? `<div class="text-sm text-gray-500">Verified ${fmtDate(item.last_verified)}</div>`
+        : `<div class="text-sm text-gray-500">Not verified yet</div>`
+      }
       <button class="btn" data-copy="${item.code}">Copy Code</button>
     </div>
   `;
