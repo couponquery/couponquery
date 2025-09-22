@@ -9,9 +9,7 @@ export async function handler(event) {
   try {
     // Read ?brand=<slug>
     const url = new URL(event.rawUrl || `https://x.local${event.path}${event.rawQueryString ? '?' + event.rawQueryString : ''}`);
-    console.log('DEBUG rawUrl:', event.rawUrl, 'params:', url.searchParams.toString());
     const brandSlug = url.searchParams.get('brand');
-    const wantDebug = url.searchParams.get('debug') === '1';
 
     if (!brandSlug) {
       return {
@@ -67,16 +65,6 @@ export async function handler(event) {
       .select('code_id, verified_at')
       .in('code_id', codeIds);
 
-    console.log('VALIDATIONS:', (valRows || []).length, valErr?.message, valRows && valRows[0]);
-
-    const debugInfo = {};
-    if (valErr) {
-      console.warn('validations read error:', valErr.message);
-      debugInfo.validationsError = valErr.message;
-    } else {
-      debugInfo.validationsCount = Array.isArray(valRows) ? valRows.length : -1;
-      debugInfo.validationsSample = (valRows && valRows[0]) ? valRows[0] : null;
-    }
 
     const maxVerified = new Map();
     for (const r of (valRows || [])) {
@@ -94,15 +82,7 @@ export async function handler(event) {
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        brand: brandSlug,
-        count: enriched.length,
-        codes: enriched,
-        _diag: {
-          validationsCount: (valRows || []).length,
-          validationsError: valErr?.message || null
-        }
-      }),
+      body: JSON.stringify({ brand: brandSlug, count: enriched.length, codes: enriched }),
     };
   } catch (err) {
     return {
