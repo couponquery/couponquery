@@ -1,6 +1,6 @@
 import { formatDate } from './formatDate.js';
 
-const API_BASE = "https://couponcanon.com";
+const API_BASE = "";
 
 function getBrand() {
   const p = new URLSearchParams(location.search);
@@ -141,7 +141,7 @@ async function loadBrand(brand = "demo") {
   el.innerHTML = "<div>Loading…</div>";
   
   try {
-    const res = await fetchCodesSafe(`${API_BASE}/api/brand?brand=${encodeURIComponent(brand)}`);
+    const res = await fetchCodesSafe(`${API_BASE}/.netlify/functions/getBrandCodes?brand=${encodeURIComponent(brand)}`);
     const data = await res.json();
     
     // Update Q&A block and FAQ schema
