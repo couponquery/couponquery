@@ -190,16 +190,15 @@ async function loadBrand(brand = "demo") {
 async function fetchAndRenderLiveCodes() {
   console.log('LIVE render start');
   const grid = document.getElementById('cards-grid');
+  const tpl = document.getElementById('coupon-template');
+  const template = tpl ? tpl.content.firstElementChild : null;
   console.log('Grid found:', grid);
+  console.log('Template found:', template);
 
-  if (!grid) {
-    console.error('No .cards-grid found');
+  if (!template) {
+    console.warn('No template in #coupon-template');
     return;
   }
-
-  // Use the first existing card as a template if present
-  const template = grid ? (grid.querySelector('.coupon-card') || grid.querySelector('[class*="card"]')) : null;
-  console.log('Template found:', template);
 
   try {
     console.log('Fetching from API...');
@@ -211,43 +210,35 @@ async function fetchAndRenderLiveCodes() {
     const codes = Array.isArray(data?.codes) ? data.codes : [];
     console.log('Codes length:', codes.length);
 
-    if (!template) {
-      console.warn('No template card; leaving grid as-is so we can see the issue.');
-      return;
-    }
-
     grid.innerHTML = '';
     codes.forEach(item => {
       const card = template.cloneNode(true);
 
-      // Fill brand name
-      const nameEl = card.querySelector('.brand-name');
-      if (nameEl) nameEl.textContent = item.brand || 'Unknown';
-
-      // Verified badge
-      const v = card.querySelector('.verified');
+      // fill brand + verified
+      const b = card.querySelector('[data-brand]');
+      if (b) b.textContent = item.brand || 'Unknown';
+      const v = card.querySelector('[data-verified]');
       if (v) {
-        if (item.last_verified) {
-          v.textContent = 'Verified ' + new Date(item.last_verified).toLocaleString();
-          v.style.display = '';
-        } else {
-          v.style.display = 'none';
-        }
+        if (item.last_verified) { v.textContent = 'Verified ' + new Date(item.last_verified).toLocaleString(); v.style.display=''; }
+        else { v.style.display='none'; }
       }
 
-      // Code
-      const codeEl = card.querySelector('.code');
-      if (codeEl) codeEl.textContent = item.code || '';
-
-      // Discount
-      const d = card.querySelector('.discount');
+      // fill code + discount
+      const c = card.querySelector('[data-code]');
+      if (c) c.textContent = item.code || '';
+      const d = card.querySelector('[data-discount]');
       if (d) d.textContent = item.discount_text || '';
 
-      // Logo or initials
+      // logo with initials fallback
       const brandWrap = card.querySelector('.brand') || card;
       const img = card.querySelector('.brand-logo');
-      const initialsText = (item.brand || 'NA').split(' ').map(s=>s?.[0] || '').join('').slice(0,2).toUpperCase();
-
+      const initials = (item.brand || 'NA').split(' ').map(s=>s?.[0]||'').slice(0,2).join('').toUpperCase();
+      const addInitials = () => {
+        const badge = document.createElement('div');
+        badge.className = 'initials-badge';
+        badge.textContent = initials;
+        brandWrap.prepend(badge);
+      };
       if (item.logo_url) {
         if (!img) {
           const ni = document.createElement('img');
@@ -257,23 +248,22 @@ async function fetchAndRenderLiveCodes() {
         const logo = card.querySelector('.brand-logo');
         logo.src = item.logo_url;
         logo.alt = (item.brand || 'Brand') + ' logo';
-        logo.onerror = () => {
-          logo.remove();
-          const badge = document.createElement('div');
-          badge.className = 'initials-badge';
-          badge.textContent = initialsText;
-          brandWrap.prepend(badge);
-        };
+        logo.onerror = () => { logo.remove(); addInitials(); };
       } else {
-        if (img) img.remove();
-        const badge = document.createElement('div');
-        badge.className = 'initials-badge';
-        badge.textContent = initialsText;
-        brandWrap.prepend(badge);
+        img?.remove();
+        addInitials();
       }
 
-      // Remove any demo badge if present
+      // remove any demo badge if present
       card.querySelector('.badge-demo')?.remove();
+
+      // copy button
+      const btn = card.querySelector('[data-copy]');
+      if (btn && item.code) {
+        btn.addEventListener('click', async () => {
+          try { await navigator.clipboard.writeText(item.code); btn.textContent = 'Copied!'; setTimeout(()=>btn.textContent='Copy Code', 1200); } catch {}
+        });
+      }
 
       grid.appendChild(card);
     });
