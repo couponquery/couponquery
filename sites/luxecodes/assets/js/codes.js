@@ -189,9 +189,7 @@ async function loadBrand(brand = "demo") {
 }
 async function fetchAndRenderLiveCodes() {
   console.log('LIVE render start');
-  const grid = document.querySelector('.cards-grid')
-    || document.querySelector('[data-cards]')
-    || document.querySelector('[class*="grid"]');
+  const grid = document.getElementById('cards-grid');
   console.log('Grid found:', grid);
 
   if (!grid) {
