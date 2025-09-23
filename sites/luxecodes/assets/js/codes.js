@@ -189,7 +189,9 @@ async function loadBrand(brand = "demo") {
 }
 async function fetchAndRenderLiveCodes() {
   console.log('LIVE render start');
-  const grid = document.querySelector('.cards-grid');
+  const grid = document.querySelector('.cards-grid')
+    || document.querySelector('[data-cards]')
+    || document.querySelector('[class*="grid"]');
   console.log('Grid found:', grid);
 
   if (!grid) {
@@ -198,7 +200,7 @@ async function fetchAndRenderLiveCodes() {
   }
 
   // Use the first existing card as a template if present
-  const template = grid.querySelector('.coupon-card');
+  const template = grid ? (grid.querySelector('.coupon-card') || grid.querySelector('[class*="card"]')) : null;
   console.log('Template found:', template);
 
   try {
