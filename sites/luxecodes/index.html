@@ -6,6 +6,7 @@
   <title>LuxeCodes – Verified Luxury Promo Codes</title>
   <meta name="description" content="Verified luxury promo codes, updated daily. Clean, fast, trustworthy." />
   <link rel="icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/assets/css/styles.css">
   <style>
     :root { 
       --french-blue: #1e3a8a; 
@@ -271,30 +272,34 @@
 
       <section class="grid" id="cards-grid">
         <template id="coupon-template">
-          <article class="card">
-            <div class="card-header">
-              <div class="brand-logo" data-brand>Brand</div>
-              <div class="verification-pill">
-                <div class="verification-dot"></div>
-                <time data-verified>Verified recently</time>
+          <div class="promo-card">
+            <article class="card">
+              <div class="card-header">
+                <div class="brand-logo" data-brand>Brand</div>
+                <div class="verification-pill">
+                  <div class="verification-dot"></div>
+                  <time data-verified>Verified recently</time>
+                </div>
               </div>
-            </div>
-            
-            <div class="code-container">
-              <div class="promo-code" data-code>PROMOCODE</div>
-              <button class="copy-btn" data-copy>Copy Code</button>
-            </div>
-            
-            <div class="discount-text" data-discount>Discount description</div>
-            
-            <a href="#" class="shop-now">Shop Now →</a>
-          </article>
+              
+              <div class="code-container">
+                <div class="promo-code" data-code>PROMOCODE</div>
+                <button class="copy-btn" data-copy>Copy Code</button>
+              </div>
+              
+              <div class="discount-text" data-discount>Discount description</div>
+              
+              <a href="#" class="shop-now">Shop Now →</a>
+            </article>
+          </div>
         </template>
         <!-- Cards will be populated here -->
       </section>
     </div>
 
-
+    <section id="brands"></section>
+    <section id="about"></section>
+    <section id="contact"></section>
   </main>
 
   <footer>

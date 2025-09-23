@@ -1,0 +1,18 @@
+.section { 
+  max-width: 960px; 
+  margin: 0 auto; 
+}
+
+.promo-card { 
+  max-width: 820px; 
+  margin: 0 auto; 
+}
+
+.promo-code { 
+  padding: 16px; 
+}
+
+.promo-code .code { 
+  font-size: 1.5rem; 
+  letter-spacing: 0.08em; 
+}
