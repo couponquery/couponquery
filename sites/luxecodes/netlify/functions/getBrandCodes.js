@@ -14,7 +14,7 @@ exports.handler = async function(event) {
       .from('codes')
       .select('id, code, discount_text, terms, last_verified, expires_at, revoked, is_demo, brand')
       .neq('revoked', true)
-      .eq('is_demo', false)
+      .eq('is_demo', false)  // Exclude demo codes
       .or(`expires_at.is.null,expires_at.gt.${new Date().toISOString()}`);
 
     if (brandParam) query = query.eq('brand', brandParam);
